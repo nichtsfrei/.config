@@ -1,3 +1,5 @@
 gh/
 lazy-lock.json
 helm/*.lock
+pulse/
+dconf/user
