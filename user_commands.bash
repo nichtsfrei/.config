@@ -1,0 +1,26 @@
+ #/bin/sh
+
+pacman --noconfirm -S \
+     fish \
+     tmux \
+     steam \
+     kitty \
+     helix \
+     rustup \
+     qmk \
+     git \
+     curl \
+     cmake \
+     libnet \
+     hiredis \
+     gopls \
+     clang 
+
+git clone https://github.com/nichtsfrei/.config.git /tmp/.config
+for i in $(ls /home); do
+  rm -rf "/home/$i/.config"
+  cp -r "/tmp/.config" "/home/$i/.config"
+  chown -r $i:$i "/home/$i/.config"
+  usermod -s /usr/bin/fish $i
+done
+rm -rf /tmp/.config
