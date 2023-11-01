@@ -119,6 +119,31 @@
     - keyserver-rank
     - inxi
     - tldr
+- name: "stuff"
+  description: "mostly libraries and shit"
+  hidden: false
+  selected: true
+  critical: false
+  packages:
+    - helix
+    - rustup
+    - qmk
+    - git
+    - curl
+    - cmake
+    - libnet
+    - hiredis
+    - gopls
+    - clang
+# just in aur?
+#    - paho-mqtt-c
+- name: "steam"
+  description: "if you're lazy and you know it clap your hands. or not, who cares"
+  hidden: false
+  selected: false
+  critical: false
+  packages:
+    - steam
 - name: "bspwm"
   description: bspwm is a tiling window manager that represents windows as the leaves of a full binary tree"
   hidden: false
@@ -150,7 +175,7 @@
     - gvfs-gphoto2
     - gvfs-nfs
     - gvfs-smb
-    - xfce4-terminal
+    - kitty
     - xclip
     - lightdm
     - lightdm-gtk-greeter
@@ -177,7 +202,7 @@
     - arc-x-icons-theme
     - capitaine-cursors
     - gtk-engine-murrine
-    - seahorse
+    - pass
     - xorg-xbacklight
     - meld
     - xorg-xsetroot

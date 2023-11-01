@@ -1,6 +1,7 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
 SETUVAR --export KUBECONFIG:/home/philipp/\x2ekube/config
+SETUVAR --export --path PKG_CONFIG_PATH:/usr/local/lib/pkgconfig/
 SETUVAR __fish_initialized:3400
 SETUVAR fish_color_autosuggestion:555\x1ebrblack
 SETUVAR fish_color_cancel:\x2dr
