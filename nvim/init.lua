@@ -80,10 +80,6 @@ require('lazy').setup({
     -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      { 'williamboman/mason.nvim', config = true },
-      'williamboman/mason-lspconfig.nvim',
-
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
@@ -131,15 +127,23 @@ require('lazy').setup({
       end,
     },
   },
+  -- {
+  --   'nyoom-engineering/oxocarbon.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.o.background = 'light'
+  --     vim.cmd.colorscheme 'oxocarbon'
+  --   end
+  -- },
+
   {
-    'nyoom-engineering/oxocarbon.nvim',
+    'NLKNguyen/papercolor-theme',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'oxocarbon'
+      vim.o.background = 'light'
+      vim.cmd.colorscheme 'PaperColor'
     end
   },
-
-
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -192,7 +196,46 @@ require('lazy').setup({
       'nvim-lua/plenary.nvim',
       'mfussenegger/nvim-dap',
     }
-  }
+  },
+  --   {
+  --   'huggingface/llm.nvim',
+  --   opts = {
+  --     -- cf Setup
+  --   }
+  -- },
+  {
+  "nomnivore/ollama.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+  },
+
+  -- All the user commands added by the plugin
+  cmd = { "Ollama", "OllamaModel", "OllamaServe", "OllamaServeStop" },
+
+  keys = {
+    -- Sample keybind for prompt menu. Note that the <c-u> is important for selections to work properly.
+    {
+      "<leader>oo",
+      ":<c-u>lua require('ollama').prompt()<cr>",
+      desc = "ollama prompt",
+      mode = { "n", "v" },
+    },
+
+    -- Sample keybind for direct prompting. Note that the <c-u> is important for selections to work properly.
+    {
+      "<leader>oG",
+      ":<c-u>lua require('ollama').prompt('Generate_Code')<cr>",
+      desc = "ollama Generate Code",
+      mode = { "n", "v" },
+    },
+  },
+
+  ---@type Ollama.Config
+  opts = {
+    -- your configuration overrides
+      model = "codellama:13b",
+  },
+},
 
 
 }, {})
@@ -277,28 +320,20 @@ require('telescope').setup {
 pcall(require('telescope').load_extension, 'fzf')
 
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
-  -- You can pass additional configuration to telescope to change theme, layout, etc.
-  require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-    winblend = 10,
-    previewer = false,
-  })
-end, { desc = '[/] Fuzzily search in current buffer' })
 
-vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<leader>g', require('telescope.builtin').git_files, { desc = 'Search [G]it Files' })
+vim.keymap.set('n', '<leader>f', require('telescope.builtin').find_files, { desc = 'Search [F]iles' })
+vim.keymap.set('n', '<leader>?', require('telescope.builtin').help_tags, { desc = '[?] Help' })
+vim.keymap.set('n', '<leader>w', require('telescope.builtin').grep_string, { desc = 'Search current [W]ord' })
+vim.keymap.set('n', '<leader>/', require('telescope.builtin').live_grep, { desc = '[/] Search by Grep' })
+vim.keymap.set('n', '<leader>i', require('telescope.builtin').diagnostics, { desc = 'Search D[i]agnostics' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'vim' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -348,15 +383,15 @@ require('nvim-treesitter.configs').setup {
         ['[]'] = '@class.outer',
       },
     },
-    swap = {
-      enable = true,
-      swap_next = {
-        ['<leader>a'] = '@parameter.inner',
-      },
-      swap_previous = {
-        ['<leader>A'] = '@parameter.inner',
-      },
-    },
+    -- swap = {
+    --   enable = true,
+    --   swap_next = {
+    --     ['<leader>a'] = '@parameter.inner',
+    --   },
+    --   swap_previous = {
+    --     ['<leader>A'] = '@parameter.inner',
+    --   },
+    -- },
   },
 }
 
@@ -383,8 +418,8 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
-  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  nmap('<leader>r', vim.lsp.buf.rename, 'Re[n]ame')
+  nmap('<leader>a', vim.lsp.buf.code_action, 'Code [A]ction')
 
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -425,7 +460,7 @@ local servers = {
   clangd = {},
   -- gopls = {},
   -- pyright = {},
-  -- rust_analyzer = {},
+  rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
@@ -437,6 +472,16 @@ local servers = {
   },
 }
 
+local lspconfig = require('lspconfig')
+for key,value in pairs(servers) do 
+  lspconfig[key].setup({
+      on_attach = on_attach,
+      settings = value,
+      filetypes = value.filetypes,
+
+  })
+end
+
 -- Setup neovim lua configuration
 require('neodev').setup()
 
@@ -444,30 +489,14 @@ require('neodev').setup()
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
--- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-}
-
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-    }
-  end
-}
-
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
+
+
 
 cmp.setup {
   snippet = {
@@ -510,18 +539,41 @@ cmp.setup {
   },
 }
 
-local rt = require("rust-tools")
 
-rt.setup({
-  server = {
-    on_attach = function(_, bufnr)
-      -- Hover actions
-      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-      -- Code action groups
-      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-    end,
-  },
-})
-
+-- didn't find out how to run that api in front of ollama
+-- local llm = require('llm')
+-- llm.setup({
+--   api_token = nil, -- cf Install paragraph
+--   -- point to local address
+--   model = "bigcode/starcoder", -- can be a model ID or an http(s) endpoint
+--   tokens_to_clear = { "<|endoftext|>" }, -- tokens to remove from the model's output
+--   -- parameters that are added to the request body
+--   query_params = {
+--     max_new_tokens = 60,
+--     temperature = 0.2,
+--     top_p = 0.95,
+--     stop_tokens = nil,
+--   },
+--   -- set this if the model supports fill in the middle
+--   fim = {
+--     enabled = true,
+--     prefix = "<fim_prefix>",
+--     middle = "<fim_middle>",
+--     suffix = "<fim_suffix>",
+--   },
+--   debounce_ms = 150,
+--   accept_keymap = "<Tab>",
+--   dismiss_keymap = "<S-Tab>",
+--   tls_skip_verify_insecure = false,
+--   -- llm-ls configuration, cf llm-ls section
+--   lsp = {
+--     bin_path = nil,
+--     version = "0.4.0",
+--   },
+--   tokenizer = nil, -- cf Tokenizer paragraph
+--   context_window = 8192, -- max number of tokens for the context window
+--   enable_suggestions_on_startup = true,
+--   enable_suggestions_on_files = "*", -- pattern matching syntax to enable suggestions on specific files, either a string or a list of strings
+-- })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2
