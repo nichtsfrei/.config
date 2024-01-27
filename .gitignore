@@ -3,3 +3,4 @@ lazy-lock.json
 helm/*.lock
 pulse/
 dconf/user
+unity3d/

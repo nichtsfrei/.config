@@ -93,40 +93,16 @@ require('lazy').setup({
     -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-
       -- Adds LSP completion capabilities
       'hrsh7th/cmp-nvim-lsp',
 
-      -- Adds a number of user-friendly snippets
-      'rafamadriz/friendly-snippets',
+      -- Adds LSP completion capabilities
+      'hrsh7th/cmp-path',
     },
   },
 
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim',  opts = {} },
-  {
-    -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-      on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk,
-          { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
-        vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
-        vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
-      end,
-    },
-  },
   -- {
   --   'nyoom-engineering/oxocarbon.nvim',
   --   priority = 1000,
@@ -203,39 +179,9 @@ require('lazy').setup({
   --     -- cf Setup
   --   }
   -- },
-  {
-  "nomnivore/ollama.nvim",
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-  },
-
-  -- All the user commands added by the plugin
-  cmd = { "Ollama", "OllamaModel", "OllamaServe", "OllamaServeStop" },
-
-  keys = {
-    -- Sample keybind for prompt menu. Note that the <c-u> is important for selections to work properly.
-    {
-      "<leader>oo",
-      ":<c-u>lua require('ollama').prompt()<cr>",
-      desc = "ollama prompt",
-      mode = { "n", "v" },
-    },
-
-    -- Sample keybind for direct prompting. Note that the <c-u> is important for selections to work properly.
-    {
-      "<leader>oG",
-      ":<c-u>lua require('ollama').prompt('Generate_Code')<cr>",
-      desc = "ollama Generate Code",
-      mode = { "n", "v" },
-    },
-  },
-
-  ---@type Ollama.Config
-  opts = {
-    -- your configuration overrides
-      model = "codellama:13b",
-  },
-},
+	
+  { "David-Kunz/gen.nvim" },
+  
 
 
 }, {})
@@ -492,18 +438,9 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
 local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
-
 
 
 cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
   mapping = cmp.mapping.preset.insert {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -517,8 +454,6 @@ cmp.setup {
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
-      elseif luasnip.expand_or_locally_jumpable() then
-        luasnip.expand_or_jump()
       else
         fallback()
       end
@@ -526,16 +461,14 @@ cmp.setup {
     ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif luasnip.locally_jumpable(-1) then
-        luasnip.jump(-1)
       else
         fallback()
       end
     end, { 'i', 's' }),
   },
   sources = {
+    { name = 'path' },
     { name = 'nvim_lsp' },
-    { name = 'luasnip' },
   },
 }
 
